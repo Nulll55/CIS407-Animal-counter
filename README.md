@@ -1,9 +1,13 @@
 # CIS407-Animal-counter
 
+----countable
+public interface Countable {
+    void incrementCount();
+}
 
 
 -----Animal.java---
-public abstract class Animal {
+public abstract class Animal implements Countable {
 
     protected int count;
 
@@ -19,15 +23,17 @@ public abstract class Animal {
         return this.count;
     }
 
-    public abstract void incrementCount();
+    @Override
+    public abstract void incrementCount();  // required
 }
+
 
 ----aligator.java---
 import javax.swing.JOptionPane;
 
 public class Alligator extends Animal {
 
-    private Sheep sheep;  // reference needed to reduce sheep
+    private Sheep sheep;
 
     public Alligator(Sheep sheep) {
         super();
@@ -36,26 +42,28 @@ public class Alligator extends Animal {
 
     @Override
     public void incrementCount() {
-        count += 1;  // add 1 alligator
+        count += 1;
 
-        // Deduct one sheep if possible
+        // Remove one sheep if possible
         if (sheep.getCount() > 0) {
             sheep.count -= 1;
         }
 
-        // Message if alligators > sheep
+        // Alligators > sheep message
         if (count > sheep.getCount()) {
             JOptionPane.showMessageDialog(null,
-                "Please add more sheep for the hungry alligators");
-        }
-
-        // Message if alligators = 0 (not normally triggered here, but included)
-        if (count == 0) {
-            JOptionPane.showMessageDialog(null,
-                "No alligators now so the sheep are safe");
+                    "Please add more sheep for the hungry alligators");
         }
     }
+
+    @Override
+    public void resetCount() {
+        super.resetCount();
+        JOptionPane.showMessageDialog(null,
+                "No alligators now so the sheep are safe");
+    }
 }
+
 ---Sheep.java(subclass)
 import javax.swing.JOptionPane;
 
@@ -67,12 +75,15 @@ public class Sheep extends Animal {
 
     @Override
     public void incrementCount() {
-        count += 2;  // add 2 sheep
+        count += 2;
 
-        // Message ONLY if appropriate per your instructions.
-        // (Most students leave this blank unless special logic is needed)
+        if (count >= 10) {
+            JOptionPane.showMessageDialog(null,
+                    "Wow! That's a lot of fluffy sheep!");
+        }
     }
 }
+
 
 ----animal count gui -------
 import javax.swing.*;
@@ -91,7 +102,6 @@ public class AnimalCounterGUI extends JFrame {
 
     public AnimalCounterGUI() {
 
-        // Create animal objects
         sheep = new Sheep();
         alligator = new Alligator(sheep);
 
@@ -100,11 +110,9 @@ public class AnimalCounterGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridLayout(6, 1));
 
-        // Welcome Label
         JLabel lblWelcome = new JLabel("Welcome to the Animal Counter!", SwingConstants.CENTER);
         add(lblWelcome);
 
-        // Count Labels
         lblAlligatorCount = new JLabel("Alligators: 0");
         lblSheepCount = new JLabel("Sheep: 0");
 
@@ -113,10 +121,8 @@ public class AnimalCounterGUI extends JFrame {
         panelCounts.add(lblSheepCount);
         add(panelCounts);
 
-        // Buttons
         JButton btnAddAlligator = new JButton("Add Alligator");
         JButton btnAddSheep = new JButton("Add Sheep");
-
         JButton btnDisplay = new JButton("Display Counts");
         JButton btnReset = new JButton("Reset Counts");
         JButton btnExit = new JButton("Exit");
@@ -132,7 +138,6 @@ public class AnimalCounterGUI extends JFrame {
         panelButtons2.add(btnExit);
         add(panelButtons2);
 
-        // Radio Buttons
         rbAlligator = new JRadioButton("Alligator");
         rbSheep = new JRadioButton("Sheep");
         ButtonGroup bg = new ButtonGroup();
@@ -144,9 +149,7 @@ public class AnimalCounterGUI extends JFrame {
         panelRadio.add(rbSheep);
         add(panelRadio);
 
-        // Shared event handler
         ButtonHandler handler = new ButtonHandler();
-
         btnAddAlligator.addActionListener(handler);
         btnAddSheep.addActionListener(handler);
         btnDisplay.addActionListener(handler);
@@ -178,8 +181,8 @@ public class AnimalCounterGUI extends JFrame {
 
                 case "Display Counts":
                     JOptionPane.showMessageDialog(null,
-                        "Alligators: " + alligator.getCount() +
-                        "\nSheep: " + sheep.getCount());
+                            "Alligators: " + alligator.getCount() +
+                            "\nSheep: " + sheep.getCount());
                     break;
 
                 case "Reset Counts":
@@ -201,6 +204,7 @@ public class AnimalCounterGUI extends JFrame {
         }
     }
 }
+
 -----animalCounterGUIApp.java---------
 public class AnimalCounterGUIApp {
 
@@ -209,5 +213,6 @@ public class AnimalCounterGUIApp {
         gui.setVisible(true);
     }
 }
+
 
 
