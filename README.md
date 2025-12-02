@@ -8,27 +8,26 @@ public abstract class Animal {
     protected int count;
 
     public Animal() {
-        count = 0;
+        this.count = 0;
     }
 
     public void resetCount() {
-        count = 0;
+        this.count = 0;
     }
 
     public int getCount() {
-        return count;
+        return this.count;
     }
+
+    public abstract void incrementCount();
 }
-------countable.java-----
-public interface Countable {
-    void incrementCount();
-}
+
 ----aligator.java---
 import javax.swing.JOptionPane;
 
-public class Alligator extends Animal implements Countable {
+public class Alligator extends Animal {
 
-    private Sheep sheep; // reference needed to reduce sheep
+    private Sheep sheep;  // reference needed to reduce sheep
 
     public Alligator(Sheep sheep) {
         super();
@@ -37,30 +36,30 @@ public class Alligator extends Animal implements Countable {
 
     @Override
     public void incrementCount() {
-        count += 1;    // add 1 alligator
+        count += 1;  // add 1 alligator
 
-        // If any sheep exist, remove ONE
+        // Deduct one sheep if possible
         if (sheep.getCount() > 0) {
             sheep.count -= 1;
         }
 
-        // Display message if alligators > sheep
+        // Message if alligators > sheep
         if (count > sheep.getCount()) {
             JOptionPane.showMessageDialog(null,
-                    "Please add more sheep for the hungry alligators");
+                "Please add more sheep for the hungry alligators");
         }
 
-        // If alligators drop to zero
+        // Message if alligators = 0 (not normally triggered here, but included)
         if (count == 0) {
             JOptionPane.showMessageDialog(null,
-                    "No alligators now so the sheep are safe");
+                "No alligators now so the sheep are safe");
         }
     }
 }
 ---Sheep.java(subclass)
 import javax.swing.JOptionPane;
 
-public class Sheep extends Animal implements Countable {
+public class Sheep extends Animal {
 
     public Sheep() {
         super();
@@ -70,11 +69,11 @@ public class Sheep extends Animal implements Countable {
     public void incrementCount() {
         count += 2;  // add 2 sheep
 
-        // If no alligators exist, message
-        // Note: GUI will check this, but including here covers all cases.
-        // (Optional depending on your instructor)
+        // Message ONLY if appropriate per your instructions.
+        // (Most students leave this blank unless special logic is needed)
     }
 }
+
 ----animal count gui -------
 import javax.swing.*;
 import java.awt.*;
